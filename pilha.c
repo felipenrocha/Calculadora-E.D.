@@ -8,6 +8,8 @@
 
 t_celula_char* aloca_celula_char(char c);
 
+void imprime_pilha(t_pilha_float* pilha);
+
 
 t_pilha* aloca_pilha(){
 
@@ -131,6 +133,7 @@ double pop_float(t_pilha_float* pilha){
         t_celula_float* tmp = pilha->topo;
         pilha->topo = pilha->topo->proximo;
         double num = tmp->num;
+        pilha->tamanho--;  
         free(tmp);
         return num;
         }
@@ -138,4 +141,48 @@ double pop_float(t_pilha_float* pilha){
 
 }
 
+void imprime_pilha(t_pilha_float* pilha){
+    int tamanho = 1;
+    if(pilha->topo == NULL){
+        printf("Pilha Vazia!\n");
+    }else{
+        t_celula_float *ptr = pilha->topo;
 
+        while(ptr != NULL){
+            printf("%d. %lf\n",tamanho, ptr->num);
+            ptr = ptr->proximo;
+            tamanho++;
+        }
+
+    }
+}
+
+void apaga_pilha_float(t_pilha_float* pilha){
+
+    t_celula_float* ptr = pilha->topo;
+    t_celula_float* tmp;
+
+    while(ptr != NULL){
+        tmp = ptr;
+        ptr = ptr->proximo;
+        free(tmp);        
+    }
+
+    free(ptr);
+
+
+}
+
+void apaga_pilha_char(t_pilha* pilha){
+
+    t_celula_char* ptr = pilha->topo;
+    t_celula_char* tmp;
+
+    while(ptr != NULL){
+        tmp = ptr;
+        ptr = ptr->proximo;
+        free(tmp);      
+    }
+    free(ptr);
+
+}

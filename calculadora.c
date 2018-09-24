@@ -2,6 +2,7 @@
 
 #include "calculadora.h"
 
+int avalia_expressao(char* c);
 
 int isOperand(char c); // Retorna True quando o char é um operando;
 
@@ -15,15 +16,27 @@ int preferenciaSimbolo(char c); // Retorna a preferencia dos simbolos (+,-,*,/);
 
 double conversao_string_para_float(char* c); //Converte uma string char* c p/ float; Ex.: "2,5" -> 2.500000
 
-void opcao_letras();
+
+int valida_expressao(char c[]);
+
+float string2float(char expressao);
+
+char* infix_to_posfix(char expressao[]);
+
+float resolucao_expressao(char expressao[]);
+
+void copia_elemento(t_pilha_float* pilha);
 
 float resolve_expressao(char* c);
 
 
+
+
 void opcao_numeros(){
 
-    char* c2;
+    char* c2 = (char*) malloc(50*(sizeof(char)));
 do{
+    free(c2);
     c2 = (char*) malloc(50*(sizeof(char)));
     printf("Digite uma expressao valida:");
     scanf("%[^\n]%*c", c2);
@@ -45,8 +58,9 @@ do{
 
 void opcao_letras(){
 
-char* c2;
+char* c2 = (char*) malloc(50*(sizeof(char)));
 do{
+    free(c2);
     c2 = (char*) malloc(50*(sizeof(char)));
     printf("Digite uma expressao valida:");
     scanf("%[^\n]%*c", c2);
@@ -69,8 +83,8 @@ double conversao_string_para_float(char* c){
 int i  = 0, ctd_virgula = 0;
 int j  = 1;
 double resultado = 0;
-
- while(c[i] != ',' && c[i] != '.' && c[i] != '\0'){
+if(c != NULL){
+while(c[i] != ',' && c[i] != '.' && c[i] != '\0'){
      //Loop que conta o numero de casas até a virgula
         ctd_virgula++;
         i++;
@@ -86,17 +100,21 @@ while(c[i] != ',' && c[i] != '.' && c[i] != '\0'){
         ctd_virgula--;
     }
 
+if(c[i] == ',' || c[i] == '.'){
     i++;
-    
-while(c[i] != '\0'){
+    while(c[i] != '\0'){
 // Calcula o resultado do char após a virgula.
     resultado = resultado + ((c[i]- '0') * pow(10, (-j)));
     j++;
     i++;
     }
+}
 
 return resultado;
-
+}
+else{
+    return 0;
+}
 
 }
 
@@ -113,7 +131,6 @@ int valida_expressao(char c[]){
      
 
             if (c[i] == '('){
-            
                 push_char(pilha, '(');
             }
            else if (c[i] == '['){                       
@@ -291,6 +308,7 @@ char* infix_to_posfix(char expressao[]){
         pop(pilha);
     }
 
+    apaga_pilha_char(pilha);
     free(pilha);
    
     saida[tmp] = '\0';
@@ -354,8 +372,6 @@ float resolve_expressao(char* c){
 
     char* string2float;
 
-   // t_pilha* pilha_simbolo = aloca_pilha();
-
     t_pilha_float* pilha_operando = aloca_pilha_float();
 
     double resultado, x, y;
@@ -373,7 +389,7 @@ float resolve_expressao(char* c){
             exit(-1);
         }
         else if(isOperand(c[i])){
-            string2float = (char*) malloc(50*sizeof(char)); // Variável responsavel por guardar as strings que serão convertidas;
+            string2float = (char*) malloc(10*sizeof(char)); // Variável responsavel por guardar as strings que serão convertidas;
             int j = 0;
             while(c[i] != ' '){
                 //Separa os strings e os converte p/ floats.
@@ -428,6 +444,7 @@ float resolve_expressao(char* c){
 
     }   
 resultado = pop_float(pilha_operando);
+apaga_pilha_float(pilha_operando);
 free(pilha_operando);
 
 return resultado;
@@ -435,20 +452,194 @@ return resultado;
 
 
 void opcao_calculadora(){
+    
+double operando, x,y;
+
+char* c = (char*) malloc(50*sizeof(char));
+
+printf("Modo Calculadora\n");
+
+printf("Digite Q para sair.\n");
+
+t_pilha_float* pilha = aloca_pilha_float();
+
+do{
+    
+    free(c);
+    c = (char*) malloc(10*sizeof(char));
+    printf("\n\nPilha: \n");
+    imprime_pilha(pilha);
+    printf("\n");
+    printf("Tamanho da pilha: %d\n", pilha->tamanho);
+
+    printf("->");
+    scanf("%[^\n]%*c", c);
+    int a = avalia_expressao(c);
+    //printf("%d", a);
+    if(a == 1){
+        //Push Float
+        char* string2float = (char*) malloc(10*(sizeof(char)));
+        int i = 0;
+        while(c[i] != ' ' && c[i] != '\0'){
+            string2float[i] = c[i];
+            i++;
+        }
+        string2float[i] = '\0';
+        operando = conversao_string_para_float(string2float);
+        push_float(operando, pilha);
+        free(string2float);
+    }
+    else if(a == 2){
+        //Operacoes normais;
+        int i = 0;
+        if(pilha->tamanho > 1){
+            while(c[i] != ' ' && c[i] != '\0'){
+                switch(c[i]){ 
+                    case '+':
+                    x = pop_float(pilha);
+                    y = pop_float(pilha);
+                    push_float((x+y), pilha);
+                    break;
+                    
+                    case '-':
+                        x = pop_float(pilha);
+                        y = pop_float(pilha);
+                        push_float((y-x), pilha);
+                        break;
+
+                    case '*':
+                        x = pop_float(pilha);
+                        y = pop_float(pilha);
+                        push_float(( x * y ), pilha);
+                        break;
+
+
+                    case '/':
+                        x = pop_float(pilha);
+                        y = pop_float(pilha);
+                        push_float((y / x), pilha);
+                        break;
+
+            
+            }
+                i++;
+        }
+    }   else{
+            printf("\n------Numero de Operandos insuficiente!------\n");
+            }   
+    }
+
+    else if(a == 3){
+        //Operacoes especiais
+        int i = 0;
+        if(pilha->tamanho > 1){
+            while(c[i] != ' ' && c[i] != '\0'){
+                switch(c[i]){
+                    case '+':
+                        while(pilha->tamanho != 1){
+                            x = pop_float(pilha);
+                            y = pop_float(pilha);
+                            push_float((x+y), pilha);}
+                        break;
+                    
+                    case '-':
+                        while(pilha->tamanho != 1){
+                            x = pop_float(pilha);
+                            y = pop_float(pilha);
+                            push_float((y-x), pilha);}
+                        break;
+
+                    case '*':
+                        while(pilha->tamanho != 1){
+                            x = pop_float(pilha);
+                            y = pop_float(pilha);
+                            push_float(( x * y ), pilha);}
+                        break;
+
+
+                    case '/':
+                        while(pilha->tamanho != 1){
+                            x = pop_float(pilha);
+                            y = pop_float(pilha);
+                            push_float((y / x), pilha);}
+                        break;
+
+            
+            }
+            i++;
+            }  
+
+        }else{
+            printf("\n------Numero de Operandos insuficiente!------\n");
+        }
+    }else if(a == 4){
+        copia_elemento(pilha);
+    }
+    else if(a == 5){
+        char* string2float = (char*) malloc(10*(sizeof(char)));
+        int i = 1,j=0;
+        while(c[i] != ' ' && c[i] != '\0'){
+            string2float[j] = c[i];
+            j++;
+            i++;
+        }
+        string2float[i] = '\0';
+        operando = (conversao_string_para_float(string2float) * -1);
+        push_float(operando, pilha);
+        free(string2float);
+    }
+
+}while(avalia_expressao(c) != 0);
+apaga_pilha_float(pilha);
+free(pilha);
+free(c);
+}
+
+
+int avalia_expressao(char* c){
+
+    for(int i = 0; c[i] != '\0'; i++){
+        if(c[i] == 'q' || c[i] == 'Q'){
+            return 0;
+        }
+        else if(c[i] == 'c' || c[i] == 'C'){
+            return 4;
+        }
+        else if(isOperand(c[i])){
+            return 1;
+
+        }
+        else if(isSymbol(c[i])){
+           if(c[i+1] == '!'){
+               return 3;
+               }
+            else if(isOperand(c[i+1])){
+                return 5;
+            }   
+           else{
+               return 2;
+               }
+
+        }
+
+    }
+    
+}
+
+
+
+void copia_elemento(t_pilha_float* pilha){
+    if(pilha->tamanho == 2){
+    int ctd;
     double operando;
-    char c[5];
-    do{
-
-        printf("Modo Calculadora\n");
-        printf("Digite Q para sair.\n");
-        printf("->");
-        scanf("%c", c);
-        scanf("%*c");
-
-
-    }while(c != 'q');
-
-
-
+    ctd = pop_float(pilha);
+    operando = pop_float(pilha);
+    for(int i = 0; i < ctd; i++){
+        push_float(operando, pilha);
+    }
+    }else{
+        printf("\nNumero incompativel de Operandos.\n");
+    }
 
 }
+

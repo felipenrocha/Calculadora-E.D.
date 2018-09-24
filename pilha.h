@@ -42,6 +42,9 @@ t_pilha_float* aloca_pilha_float();
 
 t_celula_char* aloca_celula_char(char c);
 
+
+void imprime_pilha(t_pilha_float* pilha);
+
 void push(t_pilha* pilha, char c);
 
 void pop(t_pilha* pilha);
@@ -58,6 +61,10 @@ char pop_char(t_pilha* pilha);
 double pop_float(t_pilha_float* pilha_float);
 
 char* aloca_expressao();
+
+void apaga_pilha_float(t_pilha_float* pilha);
+
+void apaga_pilha_char(t_pilha* pilha);
 
 
 
