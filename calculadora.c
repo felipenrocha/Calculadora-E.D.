@@ -2,37 +2,8 @@
 
 #include "calculadora.h"
 
-int avalia_expressao(char* c);
 
-int isOperand(char c); // Retorna True quando o char é um operando;
-
-int isSymbol(char c); // Retorna True quando o char é um símbolo;
-
-int isFechaParentese(char c); // Retorna True quando o char é um parentese de fechamento;
-
-int isAbreParentese(char c); // Retorna True quando o char é um parentese de abertura;
-
-int preferenciaSimbolo(char c); // Retorna a preferencia dos simbolos (+,-,*,/);
-
-double conversao_string_para_float(char* c); //Converte uma string char* c p/ float; Ex.: "2,5" -> 2.500000
-
-
-int valida_expressao(char c[]);
-
-float string2float(char expressao);
-
-char* infix_to_posfix(char expressao[]);
-
-float resolucao_expressao(char expressao[]);
-
-void copia_elemento(t_pilha_float* pilha);
-
-float resolve_expressao(char* c);
-
-
-
-
-void opcao_numeros(){
+void opcao_resolucao(){
 
     char* c2 = (char*) malloc(50*(sizeof(char)));
 do{
@@ -49,33 +20,13 @@ do{
 
     free(c2);
     float result = resolve_expressao(posfix);
-
-    printf("Resultado da expressao é: %lf\n\n", result);
-
+    if(result != null){
+    printf("Resultado da expressao e: %lf\n\n", result);
+    }
     free(posfix);
     
 }
 
-void opcao_letras(){
-
-char* c2 = (char*) malloc(50*(sizeof(char)));
-do{
-    free(c2);
-    c2 = (char*) malloc(50*(sizeof(char)));
-    printf("Digite uma expressao valida:");
-    scanf("%[^\n]%*c", c2);
-    printf("\n");
-    
-    }
-    while(!valida_expressao(c2));
-    char* posfix =  infix_to_posfix(c2);
-    printf("\nExpressao Posfixa:%s\n\n", posfix);
-
-    free(c2);
-   
-    free(posfix);
-    
-    }
 
 
 double conversao_string_para_float(char* c){
@@ -85,7 +36,7 @@ int j  = 1;
 double resultado = 0;
 if(c != NULL){
 while(c[i] != ',' && c[i] != '.' && c[i] != '\0'){
-     //Loop que conta o numero de casas até a virgula
+     //Loop que conta o numero de casas ate a virgula
         ctd_virgula++;
         i++;
     }
@@ -94,7 +45,7 @@ i = 0;
 //printf("\nnumero de casas ate a virugla: %d\n",ctd_virgula);
    
 while(c[i] != ',' && c[i] != '.' && c[i] != '\0'){
-    // Calcula o resultado do char até a vírgula.
+    // Calcula o resultado do char ate a vírgula.
         resultado = resultado + ((c[i]- '0') * pow(10, (ctd_virgula - 1)));
         i++;
         ctd_virgula--;
@@ -143,7 +94,7 @@ int valida_expressao(char c[]){
 
             else if(c[i] == ')'){
                 if(pilha->topo == NULL){
-                printf("Expressao inválida\n");
+                printf("Expressao invalida\n");
                 free(c);
                 free(pilha);
                 return 0;                
@@ -153,7 +104,7 @@ int valida_expressao(char c[]){
                         pop(pilha);    
                 }
                     else{
-                        printf("Expressao inválida.\n");
+                        printf("Expressao invalida.\n");
                         free(c);
                         free(pilha);
                         return 0;
@@ -164,7 +115,7 @@ int valida_expressao(char c[]){
 
             else if(c[i] == ']'){
                 if(pilha->topo == NULL){
-                printf("Expressao inválida\n");
+                printf("Expressao invalida\n");
                 free(c);
                 free(pilha);
                 return 0;
@@ -172,7 +123,7 @@ int valida_expressao(char c[]){
                     if(pilha->topo->c == '['){
                         pop(pilha);    
                     }else{
-                        printf("Expressao inválida.\n");
+                        printf("Expressao invalida.\n");
                         free(c);
                         free(pilha);
                         return 0;
@@ -184,14 +135,14 @@ int valida_expressao(char c[]){
             
             else if(c[i] == '}'){
                 if(pilha->topo == NULL){
-                printf("Expressao inválida\n");
+                printf("Expressao invalida\n");
                 free(c);
                 return 0;
                 }else{
                 if(pilha->topo->c == '{'){
                 pop(pilha);    
                 }else{
-                    printf("Expressao inválida.\n");
+                    printf("Expressao invalida.\n");
                     free(c);
                     return 0;
                 }
@@ -209,13 +160,13 @@ int valida_expressao(char c[]){
 
 
 if(pilha->topo == NULL){
-printf("Expressao válida.\n");
+printf("Expressao valida.\n");
 
 free(pilha);
 return 1;}
 else{
     // free(c);
-    printf("Expressao inválida.\n");
+    printf("Expressao invalida.\n");
     free(pilha);
     free(c);
     return 0;
@@ -384,12 +335,12 @@ float resolve_expressao(char* c){
 
 
         if((c[i]>= 'A' && c[i]<= 'Z') || (c[i]>='a' && c[i]<='z')){
-        // Caso haja letras na expressao, a resolução é inválida. 
-            printf("Resolucao de expressao inválida.\n");
-            exit(-1);
+        // Caso haja letras na expressao, a resolução e invalida. 
+            printf("Resolucao de expressao invalida (A expressao possui letras).\n");
+            return null;
         }
         else if(isOperand(c[i])){
-            string2float = (char*) malloc(10*sizeof(char)); // Variável responsavel por guardar as strings que serão convertidas;
+            string2float = (char*) malloc(10*sizeof(char)); // Variavel responsavel por guardar as strings que serão convertidas;
             int j = 0;
             while(c[i] != ' '){
                 //Separa os strings e os converte p/ floats.
@@ -496,10 +447,10 @@ do{
             while(c[i] != ' ' && c[i] != '\0'){
                 switch(c[i]){ 
                     case '+':
-                    x = pop_float(pilha);
-                    y = pop_float(pilha);
-                    push_float((x+y), pilha);
-                    break;
+                        x = pop_float(pilha);
+                        y = pop_float(pilha);
+                        push_float((x+y), pilha);
+                        break;
                     
                     case '-':
                         x = pop_float(pilha);
@@ -524,7 +475,8 @@ do{
             }
                 i++;
         }
-    }   else{
+        }
+        else{
             printf("\n------Numero de Operandos insuficiente!------\n");
             }   
     }
@@ -566,7 +518,7 @@ do{
 
             
             }
-            i++;
+                i++;
             }  
 
         }else{
@@ -579,11 +531,12 @@ do{
         char* string2float = (char*) malloc(10*(sizeof(char)));
         int i = 1,j=0;
         while(c[i] != ' ' && c[i] != '\0'){
+            // Copia o numero após o sinal negativo
             string2float[j] = c[i];
             j++;
             i++;
         }
-        string2float[i] = '\0';
+        string2float[j] = '\0';
         operando = (conversao_string_para_float(string2float) * -1);
         push_float(operando, pilha);
         free(string2float);
@@ -613,7 +566,7 @@ int avalia_expressao(char* c){
            if(c[i+1] == '!'){
                return 3;
                }
-            else if(isOperand(c[i+1])){
+            else if(c[i] == '-' && isOperand(c[i+1])){
                 return 5;
             }   
            else{
