@@ -16,3 +16,4 @@ Compilador: GCC 7.3.0
 
 
 OBS.: Trabalho ainda não está pronto, enviando caso algo aconteça;
+![picture](D:\Users\df82614es\Downloads\Fluxograma.jpeg)
